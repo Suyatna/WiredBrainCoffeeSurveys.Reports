@@ -8,11 +8,34 @@ namespace WiredBrainCoffeeSurveys.Reports
     {
         static void Main(string[] args)
         {
-            GenerateWinnerEmails();
+            bool quitApp = false;
 
-            GenerateTasksReport();
+            do
+            {
+                Console.WriteLine("Please specify a report to run (rewards, comments, tasks): ");
+                var selectedReport = Console.ReadLine();
 
-            GenerateCommentsReport();
+                switch (selectedReport)
+                {
+                    case "rewards":
+                        GenerateWinnerEmails();
+                        break;
+                    case "comments":
+                        GenerateCommentsReport();
+                        break;
+                    case "tasks":
+                        GenerateTasksReport();
+                        break;
+                    case "quit":
+                        quitApp = true;
+                        break;
+                    default:
+                        Console.WriteLine("Sorry, that's not a valid option.");
+                        break;
+                }
+
+                Console.WriteLine();
+            } while (!quitApp);                          
         }
 
         public static void GenerateWinnerEmails()
@@ -86,11 +109,11 @@ namespace WiredBrainCoffeeSurveys.Reports
                 tasks.Add("Work with employees for improvement ideas.");
             }
 
-            if (responseRate < .33)
+            if (responseRate < 0.33)
             {
                 tasks.Add("Research options to improve response rate.");
             }
-            else if (responseRate > .33 && responseRate < .66)
+            else if (responseRate > 0.33 && responseRate < 0.66)
             {
                 tasks.Add("Reward participants with free coffee coupon.");
             }
