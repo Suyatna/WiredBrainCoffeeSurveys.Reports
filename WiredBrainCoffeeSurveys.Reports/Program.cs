@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace WiredBrainCoffeeSurveys.Reports
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             bool quitApp = false;
 
@@ -52,7 +53,7 @@ namespace WiredBrainCoffeeSurveys.Reports
             } while (!quitApp);                          
         }
 
-        public static void GenerateWinnerEmails(SurveyResults results)
+        private static void GenerateWinnerEmails(SurveyResults results)
         {
             var selectedEmails = new List<string>();
             int counter = 0;
@@ -74,20 +75,16 @@ namespace WiredBrainCoffeeSurveys.Reports
             File.WriteAllLines("WinnersReport.csv", selectedEmails);
         }
 
-        public static void GenerateCommentsReport(SurveyResults results)
+        private static void GenerateCommentsReport(SurveyResults results)
         {
             var comments = new List<string>();
 
             Console.WriteLine(Environment.NewLine + "Comments Output:");
-            for (var i = 0; i < results.Responses.Count; i++)
+            
+            foreach (var currentResponse in results.Responses.Where(currentResponse => currentResponse.WouldRecommend < 7.0))
             {
-                var currentResponse = results.Responses[i];
-
-                if (currentResponse.WouldRecommend < 7.0)
-                {
-                    Console.WriteLine(currentResponse.Comments);
-                    comments.Add(currentResponse.Comments);
-                }
+                Console.WriteLine(currentResponse.Comments);
+                comments.Add(currentResponse.Comments);
             }
 
             foreach (var response in results.Responses)
@@ -102,7 +99,7 @@ namespace WiredBrainCoffeeSurveys.Reports
             File.WriteAllLines("CommentsReport.csv", comments);
         }
 
-        public static void GenerateTasksReport(SurveyResults results)
+        private static void GenerateTasksReport(SurveyResults results)
         {
             var tasks = new List<string>();
 
@@ -114,14 +111,9 @@ namespace WiredBrainCoffeeSurveys.Reports
                 tasks.Add("Investigate coffee recipes and ingredients.");
             }
 
-            if (overallScore > 8.0)
-            {
-                tasks.Add("Work with leadership to reward staff");
-            }
-            else
-            {
-                tasks.Add("Work with employees for improvement ideas.");
-            }
+            tasks.Add(overallScore > 8.0
+                ? "Work with leadership to reward staff"
+                : "Work with employees for improvement ideas.");
 
             if (responseRate < 0.33)
             {
